@@ -9,27 +9,27 @@ $(function () {
 
     var appState = new AppState();
 
-    var UserNameModel = Backbone.Model.extend({ // Модель пользователя
+    var UserNameModel = Backbone.Model.extend({ // РњРѕРґРµР»СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
         defaults: {
             "Name": ""
         }
     });
 
-    var Family = Backbone.Collection.extend({ // Коллекция пользователей
+    var Family = Backbone.Collection.extend({ // РљРѕР»Р»РµРєС†РёСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»РµР№
 
         model: UserNameModel,
 
-        checkUser: function (username) { // Проверка пользователя
+        checkUser: function (username) { // РџСЂРѕРІРµСЂРєР° РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
             var findResult = this.find(function (user) { return user.get("Name") == username })
             return findResult != null;
         }
 
     });
 
-    var MyFamily = new Family([ // Моя семья
-                {Name: "Саша" },
-                { Name: "Юля" },
-                { Name: "Елизар" },
+    var MyFamily = new Family([ // РњРѕСЏ СЃРµРјСЊСЏ
+                {Name: "РЎР°С€Р°" },
+                { Name: "Р®Р»СЏ" },
+                { Name: "Р•Р»РёР·Р°СЂ" },
 
             ]);
 
@@ -37,10 +37,10 @@ $(function () {
 
     var Controller = Backbone.Router.extend({
         routes: {
-            "": "start", // Пустой hash-тэг
-            "!/": "start", // Начальная страница
-            "!/success": "success", // Блок удачи
-            "!/error": "error" // Блок ошибки
+            "": "start", // РџСѓСЃС‚РѕР№ hash-С‚СЌРі
+            "!/": "start", // РќР°С‡Р°Р»СЊРЅР°СЏ СЃС‚СЂР°РЅРёС†Р°
+            "!/success": "success", // Р‘Р»РѕРє СѓРґР°С‡Рё
+            "!/error": "error" // Р‘Р»РѕРє РѕС€РёР±РєРё
         },
 
         start: function () {
@@ -56,30 +56,30 @@ $(function () {
         }
     });
 
-    var controller = new Controller(); // Создаём контроллер
+    var controller = new Controller(); // РЎРѕР·РґР°С‘Рј РєРѕРЅС‚СЂРѕР»Р»РµСЂ
 
 
     var Block = Backbone.View.extend({
-        el: $("#block"), // DOM элемент widget'а
+        el: $("#block"), // DOM СЌР»РµРјРµРЅС‚ widget'Р°
 
-        templates: { // Шаблоны на разное состояние
+        templates: { // РЁР°Р±Р»РѕРЅС‹ РЅР° СЂР°Р·РЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
             "start": _.template($('#start').html()),
             "success": _.template($('#success').html()),
             "error": _.template($('#error').html())
         },
 
         events: {
-            "click input:button": "check" // Обработчик клика на кнопке "Проверить"
+            "click input:button": "check" // РћР±СЂР°Р±РѕС‚С‡РёРє РєР»РёРєР° РЅР° РєРЅРѕРїРєРµ "РџСЂРѕРІРµСЂРёС‚СЊ"
         },
 
-        initialize: function () { // Подписка на событие модели
+        initialize: function () { // РџРѕРґРїРёСЃРєР° РЅР° СЃРѕР±С‹С‚РёРµ РјРѕРґРµР»Рё
             this.model.bind('change', this.render, this);
         },
 
         check: function () {
             var username = this.el.find("input:text").val();
-            var find = MyFamily.checkUser(username); // Проверка имени пользователя
-            appState.set({ // Сохранение имени пользователя и состояния
+            var find = MyFamily.checkUser(username); // РџСЂРѕРІРµСЂРєР° РёРјРµРЅРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ
+            appState.set({ // РЎРѕС…СЂР°РЅРµРЅРёРµ РёРјРµРЅРё РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ Рё СЃРѕСЃС‚РѕСЏРЅРёСЏ
                 "state": find ? "success" : "error",
                 "username": username
             });
@@ -92,20 +92,20 @@ $(function () {
         }
     });
 
-    var block = new Block({ model: appState }); // создадим объект
+    var block = new Block({ model: appState }); // СЃРѕР·РґР°РґРёРј РѕР±СЉРµРєС‚
 
-    appState.trigger("change"); // Вызовем событие change у модели
+    appState.trigger("change"); // Р’С‹Р·РѕРІРµРј СЃРѕР±С‹С‚РёРµ change Сѓ РјРѕРґРµР»Рё
 
-    appState.bind("change:state", function () { // подписка на смену состояния для контроллера
+    appState.bind("change:state", function () { // РїРѕРґРїРёСЃРєР° РЅР° СЃРјРµРЅСѓ СЃРѕСЃС‚РѕСЏРЅРёСЏ РґР»СЏ РєРѕРЅС‚СЂРѕР»Р»РµСЂР°
         var state = this.get("state");
         if (state == "start")
-            controller.navigate("!/", false); // false потому, что нам не надо 
-                                              // вызывать обработчик у Router
+            controller.navigate("!/", false); // false РїРѕС‚РѕРјСѓ, С‡С‚Рѕ РЅР°Рј РЅРµ РЅР°РґРѕ 
+                                              // РІС‹Р·С‹РІР°С‚СЊ РѕР±СЂР°Р±РѕС‚С‡РёРє Сѓ Router
         else
             controller.navigate("!/" + state, false);
     });
 
-    Backbone.history.start();  // Запускаем HTML5 History push    
+    Backbone.history.start();  // Р—Р°РїСѓСЃРєР°РµРј HTML5 History push    
 
 
 });
